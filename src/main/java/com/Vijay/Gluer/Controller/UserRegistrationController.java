@@ -3,14 +3,10 @@ package com.Vijay.Gluer.Controller;
 import com.Vijay.Gluer.Exceptions.UserRegistrationException;
 import com.Vijay.Gluer.Model.UserRegistration;
 import com.Vijay.Gluer.Service.UserRegistrationService;
-import com.Vijay.Gluer.Service.UserRegistrationServiceImpl;
-import com.Vijay.Gluer.Service.UserRegistrationValidationServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/gluser")
