@@ -1,13 +1,13 @@
-package com.Vijay.Gluer;
+package com.Vijay.GluerProfile;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class GluerApplication {
+public class GluerProfileApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(GluerApplication.class, args);
+		SpringApplication.run(GluerProfileApplication.class, args);
 	}
 
 }
