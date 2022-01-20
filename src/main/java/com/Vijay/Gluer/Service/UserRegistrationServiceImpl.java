@@ -111,10 +111,41 @@ public class UserRegistrationServiceImpl implements UserRegistrationService{
 
     }
 
+    @Override
+    public String updateRegisteredName(String Email, UserRegistration userRegistration) {
+        UserRegistration updateNameRegistered=userRepository.findById(Email).get();
+        updateNameRegistered.setName(userRegistration.getName());
+        userRepository.save(updateNameRegistered);
+        return "User Name Updated Successfully";
+    }
+
+    @Override
+    public String updateRegisteredPassword(String Email, UserRegistration userRegistration) {
+        UserRegistration updatePasswordRegistered=userRepository.findById(Email).get();
+        String password = updatePasswordRegistered.getPassword();
+        updatePasswordRegistered.setPassword(userRegistration.getPassword());
+        updatePasswordRegistered.setConfirmpass(userRegistration.getConfirmpass());
+        if(updatePasswordRegistered.getPassword().equals(updatePasswordRegistered.getConfirmpass()) &&
+                !password.equals(updatePasswordRegistered.getPassword())){
+            userRepository.save(updatePasswordRegistered);
+            return "Password registered Successfully";
+        }
+        else if(password.equals(updatePasswordRegistered.getPassword())){
+            return "No Changes Made in password, using the same old password";
+        }
+        else {
+            return "Password and its conformation are not same,please check and re-enter";
+        }
 
 
+    }
 
-
+    @Override
+    public String deleteUser(String email) {
+        UserRegistration forDeletion = userRepository.findById(email).get();
+        userRepository.deleteById(email);
+        return "Deleted Successfully";
+    }
 
 
     public void sendMail(String email){

@@ -61,5 +61,23 @@ return new ResponseEntity<>(userRegistration,HttpStatus.OK);
         return new ResponseEntity<>(validate,HttpStatus.OK);
     }
 
+    @PutMapping("/update/{email}")
+    public ResponseEntity<String> updateName(@PathVariable String email,@RequestBody UserRegistration userRegistration){
+        String userRegistration1=userRegistrationService.updateRegisteredName(email,userRegistration);
+        return new ResponseEntity<>(userRegistration1,HttpStatus.OK);
+    }
+
+    @PutMapping("/updatePassword/{email}")
+    public ResponseEntity<String> updatePassword(@PathVariable String email,@RequestBody UserRegistration userRegistration){
+        String updatedPasswordStatus = userRegistrationService.updateRegisteredPassword(email, userRegistration);
+        return new ResponseEntity<>(updatedPasswordStatus,HttpStatus.OK);
+    }
+
+
+    @DeleteMapping("/delete/{email}")
+    public ResponseEntity<String> deleteUser(@PathVariable String email){
+        String deleteUserByEmail=userRegistrationService.deleteUser(email);
+        return new ResponseEntity<>(deleteUserByEmail,HttpStatus.OK);
+    }
 
 }

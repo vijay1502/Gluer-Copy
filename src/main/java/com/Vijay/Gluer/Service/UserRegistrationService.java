@@ -17,4 +17,10 @@ public interface UserRegistrationService {
     public String updateUserValidation3(String Encrypted);
 
     public String updateUserOnSlashValidation(String Email);
+
+    public String updateRegisteredName(String Email,UserRegistration userRegistration);
+
+    public String updateRegisteredPassword(String Email,UserRegistration userRegistration);
+
+    public String deleteUser(String email);
 }
