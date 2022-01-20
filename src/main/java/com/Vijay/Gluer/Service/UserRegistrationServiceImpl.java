@@ -6,22 +6,10 @@ import com.Vijay.Gluer.Repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.crypto.Cipher;
-import javax.crypto.SecretKey;
-import javax.crypto.SecretKeyFactory;
-import javax.crypto.spec.IvParameterSpec;
-import javax.crypto.spec.PBEKeySpec;
-import javax.crypto.spec.SecretKeySpec;
 import javax.mail.*;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
-import java.nio.charset.StandardCharsets;
-import java.security.spec.KeySpec;
-import java.util.Base64;
-import java.util.Optional;
 import java.util.Properties;
-
-import static javax.crypto.Cipher.SECRET_KEY;
 
 @Service
 public class UserRegistrationServiceImpl implements UserRegistrationService{
@@ -29,13 +17,6 @@ public class UserRegistrationServiceImpl implements UserRegistrationService{
 
     private UserRepository userRepository;
     private EncryptionService encryptionService=new EncryptionService();
-
-    private static final String SECRET_KEY = "My!Name!is_Vijay";
-    private static final String SALT = "This_is!for_ever";
-
-
-    private static final String SECRET_KEY_2= "UseThisSecretKey";
-    private static final String SALT_2 = "CheckIfItWorking";
 
     @Autowired
     public UserRegistrationServiceImpl(UserRepository userRepository){
@@ -85,6 +66,37 @@ public class UserRegistrationServiceImpl implements UserRegistrationService{
         userRepository.save(validate);
         return "User Registered Successfully, Go to Login Page";
     }
+
+
+    @Override
+    public String updateUserValidation2(String Encrypted) {
+        UserRegistration userRegistration=new UserRegistration();
+        String email=encryptionService.decryptAnother(Encrypted);
+//        UserRegistration allByEncryptor = userRepository.findAllByEncryptor(Encrypted);
+//        System.out.println(allByEncryptor.getEmail());
+        UserRegistration validate = userRepository.findById(email).get();
+        userRegistration.setValidated("Yes");
+        validate.setValidated(userRegistration.getValidated());
+        userRepository.save(validate);
+        return "User Registered Successfully, Go to Login Page";
+    }
+
+
+
+
+    @Override
+    public String updateUserValidation3(String Encrypted) {
+        UserRegistration userRegistration=new UserRegistration();
+        String email=encryptionService.decryptAnother3(Encrypted);
+//        UserRegistration allByEncryptor = userRepository.findAllByEncryptor(Encrypted);
+//        System.out.println(allByEncryptor.getEmail());
+        UserRegistration validate = userRepository.findById(email).get();
+        userRegistration.setValidated("Yes");
+        validate.setValidated(userRegistration.getValidated());
+        userRepository.save(validate);
+        return "User Registered Successfully, Go to Login Page";
+    }
+
 
     @Override
     public String updateUserOnSlashValidation(String email) {
@@ -177,10 +189,10 @@ public class UserRegistrationServiceImpl implements UserRegistrationService{
 //            }
 //            String encryptedString = encyptedEmail(email);
             else if(!encryptedString2.contains("/")){
-                    linkText=("http://localhost:8071/gluser/verify/" + encryptedString2);
+                    linkText=("http://localhost:8071/gluser/verify2/" + encryptedString2);
             }
             else if(!encryptedString3.contains("/")){
-                linkText=("http://localhost:8071/gluser/verify/" + encryptedString3);
+                linkText=("http://localhost:8071/gluser/verify3/" + encryptedString3);
             }
             else {
                 linkText=("http://localhost:8071/gluser/glueme/verify/"+email);

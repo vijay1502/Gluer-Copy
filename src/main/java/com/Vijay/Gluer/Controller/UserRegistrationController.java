@@ -46,4 +46,20 @@ return new ResponseEntity<>(userRegistration,HttpStatus.OK);
     }
 
 
+    @GetMapping("/verify2/{encryptor}")
+    public ResponseEntity<String> updateValidated2(@PathVariable String encryptor) {
+
+        String validate=userRegistrationService.updateUserValidation2(encryptor);
+        return new ResponseEntity<>(validate,HttpStatus.OK);
+    }
+
+
+    @GetMapping("/verify3/{encryptor}")
+    public ResponseEntity<String> updateValidated3(@PathVariable String encryptor) {
+
+        String validate=userRegistrationService.updateUserValidation3(encryptor);
+        return new ResponseEntity<>(validate,HttpStatus.OK);
+    }
+
+
 }
