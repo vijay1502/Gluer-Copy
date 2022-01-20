@@ -28,9 +28,14 @@ public class UserRegistrationServiceImpl implements UserRegistrationService{
 
 
     private UserRepository userRepository;
+    private EncryptionService encryptionService=new EncryptionService();
 
     private static final String SECRET_KEY = "My!Name!is_Vijay";
     private static final String SALT = "This_is!for_ever";
+
+
+    private static final String SECRET_KEY_2= "UseThisSecretKey";
+    private static final String SALT_2 = "CheckIfItWorking";
 
     @Autowired
     public UserRegistrationServiceImpl(UserRepository userRepository){
@@ -44,12 +49,10 @@ public class UserRegistrationServiceImpl implements UserRegistrationService{
         UserRegistration saved=new UserRegistration();
         String result=new String();
         userRegistration.setValidated("No");
-
                 if (!(userRepository.existsById(userRegistration.getEmail()))) {
                     if((userRegistration.getEmail().substring(userRegistration.getEmail().length() - 4, userRegistration.getEmail().length()).equals(".com")) &&
                             (userRegistration.getConfirmpass().equals(userRegistration.getPassword()))){
-                        userRegistration.setEncyptor(encyptedEmail(userRegistration.getEmail()));
-
+                        userRegistration.setEncyptor(encryptionService.encyptedEmail(userRegistration.getEmail()));
                             saved = userRepository.save(userRegistration);
                             sendMail(userRegistration.getEmail());
                     result = "User Saved Successfully";}
@@ -73,7 +76,7 @@ public class UserRegistrationServiceImpl implements UserRegistrationService{
     @Override
     public String updateUserValidation(String Encrypted) {
         UserRegistration userRegistration=new UserRegistration();
-        String email=decrypt(Encrypted);
+        String email=encryptionService.decrypt(Encrypted);
 //        UserRegistration allByEncryptor = userRepository.findAllByEncryptor(Encrypted);
 //        System.out.println(allByEncryptor.getEmail());
         UserRegistration validate = userRepository.findById(email).get();
@@ -84,12 +87,14 @@ public class UserRegistrationServiceImpl implements UserRegistrationService{
     }
 
     @Override
-    public String updateUserOnSlashValidation(String Email) {
+    public String updateUserOnSlashValidation(String email) {
         UserRegistration userRegistration=new UserRegistration();
-        UserRegistration allByEmail = userRepository.findById(Email).get();
+//        UserRegistration allByEncryptor = userRepository.findAllByEncryptor(Encrypted);
+//        System.out.println(allByEncryptor.getEmail());
+        UserRegistration validate = userRepository.findById(email).get();
         userRegistration.setValidated("Yes");
-        allByEmail.setValidated(userRegistration.getValidated());
-        userRepository.save(allByEmail);
+        validate.setValidated(userRegistration.getValidated());
+        userRepository.save(validate);
         return "User Registered Successfully, Go to Login Page";
 
     }
@@ -101,6 +106,7 @@ public class UserRegistrationServiceImpl implements UserRegistrationService{
 
 
     public void sendMail(String email){
+
 // Recipient's email ID needs to be mentioned.
         String to = email;
 
@@ -151,7 +157,9 @@ public class UserRegistrationServiceImpl implements UserRegistrationService{
 
             String linkText=new String();
 
-            String encryptedString = encyptedEmail(email);
+            String encryptedString = encryptionService.encyptedEmail(email);
+            String encryptedString2=encryptionService.encryptionEmail2(email);
+            String encryptedString3=encryptionService.encryptionEmail3(email);
             if(!encryptedString.contains("/")){
                 linkText=("http://localhost:8071/gluser/verify/"+encryptedString);
             }
@@ -168,8 +176,14 @@ public class UserRegistrationServiceImpl implements UserRegistrationService{
 //                e.printStackTrace();
 //            }
 //            String encryptedString = encyptedEmail(email);
+            else if(!encryptedString2.contains("/")){
+                    linkText=("http://localhost:8071/gluser/verify/" + encryptedString2);
+            }
+            else if(!encryptedString3.contains("/")){
+                linkText=("http://localhost:8071/gluser/verify/" + encryptedString3);
+            }
             else {
-                linkText=("http://localhost:8071/gluser/glueme/verify/" + email);
+                linkText=("http://localhost:8071/gluser/glueme/verify/"+email);
             }
             message.setText(linkText);
             System.out.println("sending...");
@@ -182,47 +196,6 @@ public class UserRegistrationServiceImpl implements UserRegistrationService{
 
     }
 
-
-    public String encyptedEmail(String email){
-
-        try {
-            byte[] iv = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-            IvParameterSpec ivspec = new IvParameterSpec(iv);
-
-            SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
-            KeySpec spec = new PBEKeySpec(SECRET_KEY.toCharArray(), SALT.getBytes(), 65536, 256);
-            SecretKey tmp = factory.generateSecret(spec);
-            SecretKeySpec secretKey = new SecretKeySpec(tmp.getEncoded(), "AES");
-
-            Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
-            cipher.init(Cipher.ENCRYPT_MODE, secretKey, ivspec);
-            return Base64.getEncoder()
-                    .encodeToString(cipher.doFinal(email.getBytes(StandardCharsets.UTF_8)));
-        } catch (Exception e) {
-            System.out.println("Error while encrypting: " + e.toString());
-        }
-        return null;
-    }
-
-
-    public static String decrypt(String strToDecrypt) {
-        try {
-            byte[] iv = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-            IvParameterSpec ivspec = new IvParameterSpec(iv);
-
-            SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
-            KeySpec spec = new PBEKeySpec(SECRET_KEY.toCharArray(), SALT.getBytes(), 65536, 256);
-            SecretKey tmp = factory.generateSecret(spec);
-            SecretKeySpec secretKey = new SecretKeySpec(tmp.getEncoded(), "AES");
-
-            Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5PADDING");
-            cipher.init(Cipher.DECRYPT_MODE, secretKey, ivspec);
-            return new String(cipher.doFinal(Base64.getDecoder().decode(strToDecrypt)));
-        } catch (Exception e) {
-            System.out.println("Error while decrypting: " + e.toString());
-        }
-        return null;
-    }
 
 
 //    return emailStringEncrypted;
